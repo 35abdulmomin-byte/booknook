@@ -22,7 +22,7 @@ export default async function BookDetailsPage({ params }: Props) {
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="grid gap-10 overflow-hidden rounded-3xl border bg-card p-6 shadow-sm md:grid-cols-2 md:p-8">
         <div className="h-[26rem] overflow-hidden rounded-2xl bg-muted">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {/*eslint-disable-next-line @next/next/no-img-element*/}
           <img src={book.image} alt={book.title} className="h-full w-full object-cover" />
         </div>
 
