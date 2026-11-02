@@ -62,7 +62,6 @@ export default function BorrowButton({ bookId, bookTitle, available }: Props) {
             You can keep this book for 7 days. Confirm your details to continue.
           </DialogDescription>
         </DialogHeader>
-
         <form onSubmit={handleConfirm} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="borrowName">Name</Label>
