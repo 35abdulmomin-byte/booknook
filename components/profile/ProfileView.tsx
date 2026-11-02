@@ -62,7 +62,7 @@ export default function ProfileView() {
 
   return (
     <div className="mx-auto max-w-2xl overflow-hidden rounded-3xl border bg-card shadow-sm">
-      {/* banner */}
+      {/*banner */}
       <div className="h-32 bg-gradient-to-br from-amber-900 via-orange-800 to-stone-900" />
 
       <div className="px-6 pb-8 sm:px-10">
