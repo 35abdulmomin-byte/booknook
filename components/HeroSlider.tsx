@@ -91,7 +91,6 @@ export default function HeroSlider() {
                     <Link href="/books">Browse Books</Link>
                   </Button>
                 </div>
-
                 <div className="hidden justify-center md:flex">
                   <div className="flex h-56 w-56 items-center justify-center rounded-[2.5rem] border border-white/20 bg-white/10 shadow-2xl backdrop-blur-sm lg:h-72 lg:w-72">
                     <Icon className="h-28 w-28 lg:h-36 lg:w-36" strokeWidth={1.25} />
