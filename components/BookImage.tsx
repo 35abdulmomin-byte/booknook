@@ -18,7 +18,7 @@ export default function BookImage({ src, alt, className }: Props) {
   }
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
+    //eslint-disable-next-line @next/next/no-img-element
     <img src={src} alt={alt} className={className} onError={() => setFailed(true)} />
   );
 }
