@@ -6,7 +6,7 @@ import { MongoClient } from "mongodb";
 
 dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
-// বিল্ডের সময় undefined এড়ানোর জন্য ফলব্যাক দেওয়া হলো
+// বিল্ডের সময় undefined এড়ানোর জন্য ফলব্যাক দেওয়া হলো
 const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/booknook";
 
 const globalForMongo = globalThis as unknown as { _mongoClient?: MongoClient };
@@ -22,6 +22,13 @@ const db = client.db("booknook");
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
+  
+  // "Invalid origin" এরর ঠিক করতে এই অংশটি যোগ করা হয়েছে
+  trustedOrigins: [
+    "https://booknook-inky-seven.vercel.app",
+    "http://localhost:3000"
+  ],
+
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
