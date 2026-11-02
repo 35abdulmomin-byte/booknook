@@ -33,7 +33,6 @@ export default function HowItWorks() {
           title="How Borrowing Works"
           subtitle="Four simple steps from sign up to the last page."
         />
-
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map(({ Icon, title, text }, index) => (
             <Reveal key={title} delay={index * 0.1} className="h-full">
