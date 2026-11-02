@@ -10,7 +10,7 @@ export default function AddedBy({ name, email }: Props) {
   const { data: session, isPending } = authClient.useSession();
   const isSeedBook = email === SEED_EMAIL;
 
-  // seed করা বইয়ের জন্য লগই
+  
   if (isSeedBook && isPending) {
     return <dd className="h-10" />;
   }
