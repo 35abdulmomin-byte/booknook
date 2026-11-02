@@ -137,7 +137,9 @@ export default function ProfileView() {
         <Button
           variant="destructive"
           className="mt-6 w-full rounded-full"
-          onClick={handleLogout}
+          onClick={() => {
+            handleLogout();
+          }}
         >
           <LogOut className="mr-2 h-4 w-4" /> Logout
         </Button>
