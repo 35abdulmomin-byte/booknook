@@ -50,15 +50,13 @@ export default function Navbar() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   const handleLogout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success("Logged out successfully");
-          router.push("/");
-        },
-        onError: () => toast.error("Logout failed. Please try again."),
-      },
-    });
+    try {
+      await authClient.signOut();
+      toast.success("Logged out successfully");
+      router.push("/");
+    } catch {
+      toast.error("Logout failed. Please try again.");
+    }
   };
 
   return (
@@ -168,7 +166,8 @@ export default function Navbar() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
                     handleLogout();
                   }}
                   className="cursor-pointer text-destructive focus:text-destructive"

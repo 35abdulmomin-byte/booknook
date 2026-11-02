@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { FaFacebookF, FaGithub, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import Logo from "@/components/Logo";
@@ -20,6 +23,12 @@ const socials = [
 ];
 
 export default function Footer() {
+  const [currentYear, setCurrentYear] = useState<number>(2026);
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="mt-20 border-t bg-secondary/50">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
@@ -103,7 +112,7 @@ export default function Footer() {
 
       <Separator />
       <p className="mx-auto max-w-7xl px-4 py-5 text-center text-sm text-muted-foreground sm:px-6 lg:px-8">
-        © {new Date().getFullYear()} BookNook. All rights reserved.
+        © {currentYear} BookNook. All rights reserved.
       </p>
     </footer>
   );

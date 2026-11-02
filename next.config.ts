@@ -5,8 +5,8 @@ const nextConfig: NextConfig = {
   experimental: {
     agentFeedback: true,
   },
-  cacheComponents: true,
-  partialPrefetching: true,
+  // cacheComponents: true, // এটি কমেন্ট আউট বা বাদ দিন
+  // partialPrefetching: true, // এটি কমেন্ট আউট বা বাদ দিন
   turbopack: {
     rules: {
       "*.css": {

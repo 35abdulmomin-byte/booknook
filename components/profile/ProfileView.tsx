@@ -44,15 +44,13 @@ export default function ProfileView() {
   }, [email]);
 
   const handleLogout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success("Logged out successfully");
-          router.push("/");
-        },
-        onError: () => toast.error("Logout failed. Please try again."),
-      },
-    });
+    try {
+      await authClient.signOut();
+      toast.success("Logged out successfully");
+      router.push("/");
+    } catch {
+      toast.error("Logout failed. Please try again.");
+    }
   };
 
   if (isPending) return <Spinner label="Loading your profile..." />;
@@ -137,7 +135,8 @@ export default function ProfileView() {
         <Button
           variant="destructive"
           className="mt-6 w-full rounded-full"
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
             handleLogout();
           }}
         >
