@@ -66,7 +66,7 @@ export default function ProfileView() {
       <div className="h-32 bg-gradient-to-br from-amber-900 via-orange-800 to-stone-900" />
 
       <div className="px-6 pb-8 sm:px-10">
-        {/* avatar */}
+        {/*avatar*/}
         <div className="-mt-14 flex flex-col items-center text-center">
           <Avatar className="h-28 w-28 border-4 border-card shadow-lg">
             <AvatarImage
