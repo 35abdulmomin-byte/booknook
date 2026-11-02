@@ -29,7 +29,6 @@ export default function AddBookForm() {
       toast.error("Please choose a book image.");
       return;
     }
-
     setLoading(true);
     try {
       const image = await uploadImage(file);
@@ -56,7 +55,6 @@ export default function AddBookForm() {
       setLoading(false);
     }
   };
-
   return (
     <form onSubmit={handleSubmit} className="mx-auto max-w-3xl space-y-5 rounded-3xl border bg-card p-6 shadow-sm sm:p-8">
       <BookFields />
