@@ -9,13 +9,8 @@ import { formatDate } from "@/lib/format";
 
 type Props = { params: Promise<{ id: string }> };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  const book = await getBook(id);
-  return { title: book ? book.title : "Book Not Found" };
-}
+export const metadata: Metadata = { title: "Book Details" };
 
-// আলাদা সাব-কম্পোনেন্ট যেখানে ডাইনামিক ডেটা ও params হ্যান্ডেল হচ্ছে
 async function BookDetails({ id }: { id: string }) {
   const book = await getBook(id);
   if (!book) notFound();
@@ -23,7 +18,7 @@ async function BookDetails({ id }: { id: string }) {
   return (
     <div className="grid gap-10 overflow-hidden rounded-3xl border bg-card p-6 shadow-sm md:grid-cols-2 md:p-8">
       <div className="h-[26rem] overflow-hidden rounded-2xl bg-muted">
-        {/*eslint-disable-next-line @next/next/no-img-element*/}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={book.image} alt={book.title} className="h-full w-full object-cover" />
       </div>
 
@@ -66,7 +61,13 @@ export default async function BookDetailsPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
-      <Suspense fallback={<div className="py-20 text-center"><Spinner label="Loading book details..." /></div>}>
+      <Suspense
+        fallback={
+          <div className="py-20 text-center">
+            <Spinner label="Loading book details..." />
+          </div>
+        }
+      >
         <BookDetails id={id} />
       </Suspense>
     </div>

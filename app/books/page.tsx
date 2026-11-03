@@ -1,75 +1,68 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import AddedBy from "@/components/books/AddedBy";
-import BorrowButton from "@/components/books/BorrowButton";
-import Spinner from "@/components/Spinner";
-import { getBook } from "@/lib/books";
-import { formatDate } from "@/lib/format";
+import { Suspense } from "react";
+import { BookX } from "lucide-react";
+import BookCard, { type Book } from "@/components/BookCard";
+import BookFilters from "@/components/books/BookFilters";
+import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
-type Props = { params: Promise<{ id: string }> };
+export const metadata: Metadata = { title: "All Books" };
 
-export const metadata: Metadata = { title: "Book Details" };
+type Props = {
+  searchParams: Promise<{ category?: string; search?: string }>;
+};
 
-async function BookDetails({ id }: { id: string }) {
-  const book = await getBook(id);
-  if (!book) notFound();
+export default async function BooksPage({ searchParams }: Props) {
+  const { category, search } = await searchParams;
 
-  return (
-    <div className="grid gap-10 overflow-hidden rounded-3xl border bg-card p-6 shadow-sm md:grid-cols-2 md:p-8">
-      <div className="h-[26rem] overflow-hidden rounded-2xl bg-muted">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={book.image} alt={book.title} className="h-full w-full object-cover" />
-      </div>
+  const qs = new URLSearchParams();
+  if (category) qs.set("category", category);
+  if (search) qs.set("search", search);
 
-      <div className="flex flex-col gap-4">
-        <span className="w-fit rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-          {book.category}
-        </span>
-        <h1 className="text-3xl font-extrabold leading-tight sm:text-4xl">{book.title}</h1>
-        <p className="text-lg text-muted-foreground">by {book.author}</p>
-
-        <p className="leading-relaxed">{book.description}</p>
-
-        <dl className="grid grid-cols-2 gap-4 rounded-2xl bg-secondary/60 p-4 text-sm">
-          <div>
-            <dt className="text-muted-foreground">Added by</dt>
-            <AddedBy name={book.addedBy?.name} email={book.addedBy?.email} />
-          </div>
-          <div>
-            <dt className="text-muted-foreground">Added on</dt>
-            <dd className="font-semibold">{formatDate(book.createdAt)}</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground">Available copies</dt>
-            <dd className="font-semibold">
-              {book.availableCopies} of {book.totalCopies}
-            </dd>
-          </div>
-        </dl>
-
-        <div className="mt-auto pt-2">
-          <BorrowButton bookId={book._id} bookTitle={book.title} available={book.availableCopies} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default async function BookDetailsPage({ params }: Props) {
-  const { id } = await params;
+  let books: Book[] = [];
+  let failed = false;
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books?${qs}`, {
+      cache: "no-store",
+    });
+    if (res.ok) books = await res.json();
+    else failed = true;
+  } catch {
+    failed = true;
+  }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
-      <Suspense
-        fallback={
-          <div className="py-20 text-center">
-            <Spinner label="Loading book details..." />
-          </div>
-        }
-      >
-        <BookDetails id={id} />
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <SectionHeading
+        title="All Books"
+        subtitle="Explore the whole BookNook collection and find your next read."
+      />
+
+      <Suspense>
+        <BookFilters />
       </Suspense>
+
+      {books.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed py-16 text-center">
+          <BookX className="h-12 w-12 text-muted-foreground" />
+          <p className="text-lg font-semibold">
+            {failed ? "Could not load books" : "No books found"}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {failed
+              ? "Please try again in a moment."
+              : "Try a different search or category."}
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {books.map((book, i) => (
+            <Reveal key={book._id} delay={(i % 3) * 0.1} className="h-full">
+              <BookCard book={book} />
+            </Reveal>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
