@@ -1,4 +1,3 @@
-import Link from "next/link";
 import BookImage from "@/components/BookImage";
 import { Button } from "@/components/ui/button";
 
@@ -45,7 +44,9 @@ export default function BookCard({ book }: { book: Book }) {
         </p>
 
         <Button asChild className="mt-auto w-full rounded-full">
-          <Link href={`/books/${book._id}`}>View Details</Link>
+          {/* পুরো পেজ নতুন করে লোড হবে, তাই সব ব্রাউজারে ঠিকমতো কাজ করবে */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+          <a href={`/books/${book._id}`}>View Details</a>
         </Button>
       </div>
     </article>
