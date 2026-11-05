@@ -5,6 +5,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function BookFields({ book }: { book?: Book }) {
+  // এই মুহূর্তে যতগুলো কপি ধার নেওয়া আছে (Edit-এর সময়)
+  const borrowedNow = book ? book.totalCopies - book.availableCopies : 0;
+  const minCopies = Math.max(1, borrowedNow);
+
   return (
     <>
       <div className="grid gap-4 md:grid-cols-2">
@@ -27,7 +31,19 @@ export default function BookFields({ book }: { book?: Book }) {
         </div>
         <div className="space-y-2">
           <Label htmlFor="totalCopies">Total Copies</Label>
-          <Input id="totalCopies" name="totalCopies" type="number" min={1} defaultValue={book?.totalCopies ?? 1} required />
+          <Input
+            id="totalCopies"
+            name="totalCopies"
+            type="number"
+            min={minCopies}
+            defaultValue={book?.totalCopies ?? 1}
+            required
+          />
+          {book && borrowedNow > 0 && (
+            <p className="text-xs text-muted-foreground">
+              {borrowedNow} {borrowedNow === 1 ? "copy is" : "copies are"} currently borrowed, so total cannot be less than {minCopies}.
+            </p>
+          )}
         </div>
       </div>
 
