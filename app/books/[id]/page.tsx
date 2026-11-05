@@ -156,7 +156,9 @@ export default function BookDetailsPage() {
           <img
             src={book.image}
             alt={book.title}
-            className="h-full w-full object-cover"
+            className={`h-full w-full object-cover ${
+              book.availableCopies < 1 ? "opacity-60 grayscale" : ""
+            }`}
           />
         </div>
 
@@ -183,7 +185,7 @@ export default function BookDetailsPage() {
               </p>
             </div>
 
-            <div className="mb-8 grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+            <div className="mb-4 grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Copy className="h-4 w-4 text-primary" />
                 <span>
@@ -207,6 +209,12 @@ export default function BookDetailsPage() {
                 </div>
               )}
             </div>
+
+            {book.availableCopies < 1 && (
+              <p className="mb-8 text-sm font-medium text-destructive">
+                All copies are currently borrowed. Please check back later.
+              </p>
+            )}
           </div>
 
           <div className="flex gap-4">
@@ -220,7 +228,7 @@ export default function BookDetailsPage() {
                 ? "Borrowing..."
                 : book.availableCopies > 0
                 ? "Borrow Book"
-                : "Out of Stock"}
+                : "Unavailable"}
             </Button>
           </div>
         </div>

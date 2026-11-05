@@ -25,6 +25,7 @@ export default function BookCard({ book }: { book: Book }) {
   const router = useRouter();
 
   const bookId = book._id?.toString() || book.id || "";
+  const unavailable = book.availableCopies < 1;
 
   const handleViewDetails = () => {
     if (!bookId) return;
@@ -33,7 +34,6 @@ export default function BookCard({ book }: { book: Book }) {
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-all hover:shadow-md">
-      {/* ছবির অংশে ক্লিক */}
       <div
         onClick={handleViewDetails}
         className="relative h-60 w-full cursor-pointer overflow-hidden bg-muted"
@@ -42,11 +42,18 @@ export default function BookCard({ book }: { book: Book }) {
         <img
           src={book.image}
           alt={book.title}
-          className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+          className={`h-full w-full object-cover transition-transform duration-300 hover:scale-105 ${
+            unavailable ? "opacity-60 grayscale" : ""
+          }`}
         />
         <span className="absolute left-3 top-3 rounded-full bg-background/90 px-3 py-1 text-xs font-semibold backdrop-blur-md">
           {book.category}
         </span>
+        {unavailable && (
+          <span className="absolute right-3 top-3 rounded-full bg-destructive px-3 py-1 text-xs font-semibold text-white">
+            Unavailable
+          </span>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-5">
@@ -63,16 +70,22 @@ export default function BookCard({ book }: { book: Book }) {
         </p>
 
         <div className="mt-auto pt-4">
-          <div className="mb-4 flex items-center justify-between text-xs font-medium text-muted-foreground">
-            <span>
-              Available: {book.availableCopies}/{book.totalCopies}
+          <div className="mb-4 flex items-center justify-between text-xs font-medium">
+            <span
+              className={
+                unavailable ? "text-destructive" : "text-muted-foreground"
+              }
+            >
+              {unavailable
+                ? `No copies left (0/${book.totalCopies})`
+                : `Available: ${book.availableCopies}/${book.totalCopies}`}
             </span>
           </div>
 
           <Button
             onClick={handleViewDetails}
             className="w-full rounded-full"
-            variant="default"
+            variant={unavailable ? "outline" : "default"}
           >
             View Details <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
