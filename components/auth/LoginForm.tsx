@@ -81,18 +81,7 @@ export default function LoginForm() {
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <button
-                  type="button"
-                  onClick={() =>
-                    toast.info("Password reset is not available yet.")
-                  }
-                  className="text-sm text-primary hover:underline"
-                >
-                  Forget Password?
-                </button>
-              </div>
+              <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
