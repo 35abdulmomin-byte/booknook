@@ -6,6 +6,7 @@ import { ArrowLeft, BookOpen, Tag, Copy, User, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import AddedBy from "@/components/books/AddedBy";
 import { authClient } from "@/lib/auth-client";
 import { apiFetch } from "@/lib/api";
 
@@ -92,7 +93,6 @@ export default function BookDetailsPage() {
         "/borrows",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ bookId: book._id }),
         },
         true
@@ -194,15 +194,16 @@ export default function BookDetailsPage() {
                 </span>
               </div>
 
-              {book.addedBy?.name && (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <BookOpen className="h-4 w-4 text-primary" />
-                  <span>
-                    Added by:
-                    <strong className="ml-1 text-foreground">
-                      {book.addedBy.name}
-                    </strong>
-                  </span>
+              {book.addedBy && (
+                <div className="flex items-start gap-2 text-muted-foreground">
+                  <BookOpen className="mt-1 h-4 w-4 text-primary" />
+                  <dl>
+                    <dt className="text-xs">Added by</dt>
+                    <AddedBy
+                      name={book.addedBy.name ?? ""}
+                      email={book.addedBy.email ?? ""}
+                    />
+                  </dl>
                 </div>
               )}
             </div>
