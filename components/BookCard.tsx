@@ -1,8 +1,12 @@
-import BookImage from "@/components/BookImage";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export type Book = {
   _id: string;
+  id?: string;
   title: string;
   author: string;
   category: string;
@@ -10,45 +14,70 @@ export type Book = {
   description: string;
   totalCopies: number;
   availableCopies: number;
-  addedBy: { name: string; email: string };
-  createdAt: string;
+  addedBy?: {
+    name?: string;
+    email?: string;
+  };
+  createdAt?: string;
 };
 
 export default function BookCard({ book }: { book: Book }) {
-  const unavailable = book.availableCopies < 1;
+  const router = useRouter();
+
+  const bookId = book._id?.toString() || book.id || "";
+
+  const handleViewDetails = () => {
+    if (!bookId) return;
+    router.push(`/books/${bookId.trim()}`);
+  };
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-      <div className="relative h-64 w-full overflow-hidden bg-muted">
-        <BookImage
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-all hover:shadow-md">
+      {/* ছবির অংশে ক্লিক */}
+      <div
+        onClick={handleViewDetails}
+        className="relative h-60 w-full cursor-pointer overflow-hidden bg-muted"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src={book.image}
           alt={book.title}
-          className={`h-full w-full object-cover transition duration-500 group-hover:scale-105 ${
-            unavailable ? "opacity-60 grayscale" : ""
-          }`}
+          className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
         />
-        <span className="absolute left-3 top-3 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow">
+        <span className="absolute left-3 top-3 rounded-full bg-background/90 px-3 py-1 text-xs font-semibold backdrop-blur-md">
           {book.category}
         </span>
-        {unavailable && (
-          <span className="absolute right-3 top-3 rounded-full bg-destructive px-3 py-1 text-xs font-semibold text-white shadow">
-            Not Available
-          </span>
-        )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-1 p-5">
-        <h3 className="line-clamp-1 text-lg font-bold">{book.title}</h3>
-        <p className="line-clamp-1 text-sm text-muted-foreground">
-          by {book.author}
+      <div className="flex flex-1 flex-col p-5">
+        <h3
+          onClick={handleViewDetails}
+          className="line-clamp-1 cursor-pointer text-xl font-bold transition-colors hover:text-primary"
+        >
+          {book.title}
+        </h3>
+        <p className="text-sm text-muted-foreground">by {book.author}</p>
+
+        <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+          {book.description}
         </p>
 
-        <Button asChild className="mt-auto w-full rounded-full">
-          {/* পুরো পেজ নতুন করে লোড হবে, তাই সব ব্রাউজারে ঠিকমতো কাজ করবে */}
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href={`/books/${book._id}`}>View Details</a>
-        </Button>
+        <div className="mt-auto pt-4">
+          <div className="mb-4 flex items-center justify-between text-xs font-medium text-muted-foreground">
+            <span>
+              Available: {book.availableCopies}/{book.totalCopies}
+            </span>
+          </div>
+
+          <Button
+            onClick={handleViewDetails}
+            className="w-full rounded-full"
+            variant="default"
+          >
+            View Details <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       </div>
-    </article>
+    </div>
   );
 }

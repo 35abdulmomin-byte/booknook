@@ -12,7 +12,13 @@ async function getLatestBooks(): Promise<Book[]> {
       cache: "no-store",
     });
     if (!res.ok) return [];
-    return await res.json();
+    const data = await res.json();
+    
+    // এখানে আইডিগুলোকে জোড় করে স্ট্রিং বানিয়ে দেওয়া হলো যাতে স্ল্যাশের কোনো সমস্যা না হয়
+    return data.map((book: any) => ({
+      ...book,
+      _id: book._id ? String(book._id) : book.id ? String(book.id) : "",
+    }));
   } catch {
     return [];
   }
@@ -62,7 +68,7 @@ export default async function NewArrivals() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {books.map((book, i) => (
-            <Reveal key={book._id} delay={(i % 3) * 0.1} className="h-full">
+            <Reveal key={book._id || book.id} delay={(i % 3) * 0.1} className="h-full">
               <BookCard book={book} />
             </Reveal>
           ))}
