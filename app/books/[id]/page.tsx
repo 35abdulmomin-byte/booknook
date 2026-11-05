@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { ArrowLeft, BookOpen, Tag, Copy, User } from "lucide-react";
+import { useParams, useRouter, usePathname } from "next/navigation";
+import { ArrowLeft, BookOpen, Tag, Copy, User, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
+import { apiFetch } from "@/lib/api";
 
 type Book = {
   _id: string;
@@ -29,13 +32,14 @@ const API_URL = (
 export default function BookDetailsPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
-
-  // টেস্ট লাইন: কাজ শেষে মুছে দিও
-  console.log("DETAILS PAGE RENDERED", id);
+  const router = useRouter();
+  const pathname = usePathname();
+  const { data: session } = authClient.useSession();
 
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [borrowing, setBorrowing] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -60,30 +64,53 @@ export default function BookDetailsPage() {
           );
         }
 
-        const data = await res.json();
-        setBook(data);
+        setBook(await res.json());
       } catch (err) {
-        if (err instanceof Error && err.name === "AbortError") {
-          return;
-        }
-        setError(
-          err instanceof Error ? err.message : "Something went wrong."
-        );
+        if (err instanceof Error && err.name === "AbortError") return;
+        setError(err instanceof Error ? err.message : "Something went wrong.");
       } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
+        if (!controller.signal.aborted) setLoading(false);
       }
     };
 
     fetchBook();
-
-    return () => {
-      controller.abort();
-    };
+    return () => controller.abort();
   }, [id]);
 
-  // Loading State
+  const handleBorrow = async () => {
+    if (!book) return;
+
+    if (!session?.user) {
+      toast.info("Please login to borrow a book.");
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+      return;
+    }
+
+    setBorrowing(true);
+    try {
+      await apiFetch(
+        "/borrows",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bookId: book._id }),
+        },
+        true
+      );
+
+      toast.success("Book borrowed! Check My Borrows.");
+      setBook((prev) =>
+        prev ? { ...prev, availableCopies: prev.availableCopies - 1 } : prev
+      );
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Could not borrow the book."
+      );
+    } finally {
+      setBorrowing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -94,18 +121,15 @@ export default function BookDetailsPage() {
     );
   }
 
-  // Error State
   if (error || !book) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
         <h1 className="mb-4 text-2xl font-bold text-red-500">
           Book not found or failed to load.
         </h1>
-
         <p className="mb-6 text-sm text-muted-foreground">
           {error || "No book information available."}
         </p>
-
         <Link href="/books">
           <Button variant="outline" className="rounded-full">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -116,7 +140,6 @@ export default function BookDetailsPage() {
     );
   }
 
-  // Book Details Page
   return (
     <div className="container mx-auto max-w-4xl px-4 py-10">
       <Link
@@ -128,7 +151,6 @@ export default function BookDetailsPage() {
       </Link>
 
       <div className="grid grid-cols-1 gap-8 rounded-3xl border bg-card p-6 shadow-sm md:grid-cols-3 md:p-8">
-        {/* Book Image */}
         <div className="relative h-80 w-full overflow-hidden rounded-2xl bg-muted md:h-full">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -138,7 +160,6 @@ export default function BookDetailsPage() {
           />
         </div>
 
-        {/* Book Information */}
         <div className="flex flex-col justify-between md:col-span-2">
           <div>
             <span className="mb-3 inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
@@ -187,13 +208,18 @@ export default function BookDetailsPage() {
             </div>
           </div>
 
-          {/* Borrow Button */}
           <div className="flex gap-4">
             <Button
+              onClick={handleBorrow}
               className="flex-1 rounded-full py-6 text-base font-medium"
-              disabled={book.availableCopies < 1}
+              disabled={book.availableCopies < 1 || borrowing}
             >
-              {book.availableCopies > 0 ? "Borrow Book" : "Out of Stock"}
+              {borrowing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {borrowing
+                ? "Borrowing..."
+                : book.availableCopies > 0
+                ? "Borrow Book"
+                : "Out of Stock"}
             </Button>
           </div>
         </div>
